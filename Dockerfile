@@ -1,29 +1,32 @@
-FROM python:3.11-slim
+FROM ubuntu:22.04
 
-# LibreOffice + 한글 폰트 설치
+ENV DEBIAN_FRONTEND=noninteractive
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
 RUN apt-get update && apt-get install -y \
+    python3.11 python3-pip \
+    openjdk-17-jre-headless \
     libreoffice \
-    libreoffice-writer \
+    libreoffice-java-common \
     fonts-noto-cjk \
     fonts-noto-cjk-extra \
-    --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 작업 디렉토리
+# Python 심볼릭 링크
+RUN ln -sf /usr/bin/python3.11 /usr/bin/python3 \
+    && ln -sf /usr/bin/python3 /usr/bin/python
+
 WORKDIR /app
 
-# Python 패키지 설치
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-# 앱 파일 복사
 COPY server.py .
 COPY index.html .
 
-# 출력 폴더 생성
-RUN mkdir -p /tmp/hwp_output /tmp/hwp_tmp
+RUN mkdir -p /tmp/hwp_output /tmp/hwp_tmp /tmp/lo_profile
 
 EXPOSE 8000
-
 CMD ["python", "server.py"]
