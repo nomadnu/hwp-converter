@@ -53,7 +53,7 @@ async def convert(file: UploadFile = File(...)):
                 "--headless",
                 "--norestore",
                 "--nofirststartwizard",
-                f"--env:UserInstallation=file:///tmp/lo_profile",
+                "-env:UserInstallation=file:///tmp/lo_profile",
                 "--convert-to", "pdf",
                 "--outdir", str(job_dir),
                 str(hwp_path),
